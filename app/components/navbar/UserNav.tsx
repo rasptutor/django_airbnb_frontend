@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import MenuLink from "./MenuLink";
 import LogoutButton from "../LogoutButton";
@@ -19,10 +19,25 @@ const UserNav: React.FC<UserNavProps> = ({
     const router = useRouter();
     const loginModal = useLoginModal();
     const signupModal = useSignupModal();
-    const [isOpen, setIsOpen] = useState(true)    
+    const [isOpen, setIsOpen] = useState(false)
+    const menuRef = useRef<HTMLDivElement>(null);
+    
+    // Close dropdown on outside click
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsOpen(false);
+        }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     return (
-        <div className="p-2 relative inline-block border rounded-full">
+        <div 
+            ref={menuRef}
+            className="p-2 relative inline-block border rounded-full"
+        >
             <button 
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center"
@@ -72,7 +87,7 @@ const UserNav: React.FC<UserNavProps> = ({
                                 }}
                             />
 
-                            <LogoutButton />
+                            <LogoutButton onLogout={() => setIsOpen(false)}/>
                         </>
                     ) : (
                         <>

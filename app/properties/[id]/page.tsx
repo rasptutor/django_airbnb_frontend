@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import apiService from "@/app/services/apiService";
 import { getUserId } from "@/app/lib/actions";
+import { Bath, Bed, Users } from "lucide-react";
 
 const PropertyDetailPage = async ({params}: { params: {id: string }}) => {
     const property = await apiService.get(`/api/properties/${params.id}`);
@@ -17,26 +18,52 @@ const PropertyDetailPage = async ({params}: { params: {id: string }}) => {
                 <Image
                     fill
                     src={property.image_url}
-                    className="object-cover w-full h-full"
+                    className="object-cover"
                     alt="Beach house"
                 />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mt-4">
-                <div className="py-6 pr-6 col-span-3">
+                <div className="py-6 col-span-3">
                     <h1 className="mb-4 text-4xl">{property.title}</h1>
+                    <br/>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div className="text-center">
+                            <div className="flex items-center justify-start mb-1">
+                                <Users className="w-10 h-10 text-gray-400 mr-5" />
+                                <span className="mb-2 block text-lg text-gray-600">
+                                    {property.guests} - guests
+                                </span>
+                            </div>                            
+                        </div>
 
-                    <span className="mb-6 block text-lg text-gray-600">
-                        {property.guests} guests - {property.bedrooms} bedrooms - {property.bathrooms} bathrooms
-                    </span>                    
+                        <div className="text-center">
+                            <div className="flex items-center justify-start mb-1">
+                                <Bed className="w-10 h-10 text-gray-400 mr-5" />
+                                <span className="mb-2 block text-lg text-gray-600">
+                                    {property.bedrooms} - bedrooms
+                                </span>
+                            </div>                            
+                        </div>
 
+                        <div className="text-center">
+                            <div className="flex items-center justify-start mb-1">
+                                <Bath className="w-10 h-10 text-gray-400 mr-5" />
+                                <span className="mb-2 block text-lg text-gray-600">
+                                    {property.bathrooms} - bathrooms
+                                </span>
+                            </div>                            
+                        </div>    
+                    </div>                             
+                      
+                               
                     <Link 
                         href={`/landlords/${property.landlord.id}`}
-                        className="py-6 flex items-center space-x-4"
+                        className="py-6 flex items-center space-x-4 mt-4"
                     >
                         {property.landlord.avatar_url && (
                             <Image
-                                src={property.landlord.avatar_url}
+                                src={`http://localhost:8000${property.landlord.avatar_url}`}
                                 width={50}
                                 height={50}
                                 className="rounded-full"

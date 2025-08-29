@@ -31,7 +31,7 @@ const Categories: React.FC<CategoriesProps> = ({
                     className={`pb-4 flex flex-col items-center space-y-2 border-b-2 ${dataCategory == 'Villas' ? 'border-gray-800' : 'border-white'} opacity-60 hover:border-gray-200 hover:opacity-100`}
                 >
                     <Image
-                        src="/icn_category_beach.jpeg"
+                        src="/icon_villa.png"
                         alt="Category - Beach"
                         width={20}
                         height={20}
@@ -45,7 +45,7 @@ const Categories: React.FC<CategoriesProps> = ({
                     className={`pb-4 flex flex-col items-center space-y-2 border-b-2 ${dataCategory == 'Cabins' ? 'border-gray-800' : 'border-white'} opacity-60 hover:border-gray-200 hover:opacity-100`}
                 >
                     <Image
-                        src="/icn_category_beach.jpeg"
+                        src="/icon_cabin.png"
                         alt="Category - Beach"
                         width={20}
                         height={20}
@@ -59,7 +59,7 @@ const Categories: React.FC<CategoriesProps> = ({
                     className={`pb-4 flex flex-col items-center space-y-2 border-b-2 ${dataCategory == 'Tiny homes' ? 'border-gray-800' : 'border-white'} opacity-60 hover:border-gray-200 hover:opacity-100`}
                 >
                     <Image
-                        src="/icn_category_beach.jpeg"
+                        src="/icon_tiny_home.png"
                         alt="Category - Beach"
                         width={20}
                         height={20}

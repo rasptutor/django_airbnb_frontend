@@ -36,92 +36,72 @@ const PropertyList: React.FC<PropertyListProps> = ({
     const checkoutDate = searchModal.query.checkOut;
     const category = searchModal.query.category;
     const [properties, setProperties] = useState<PropertyType[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     console.log('searchQUery:', searchModal.query);
     console.log('numBedrooms', numBedrooms)
 
     const markFavorite = (id: string, is_favorite: boolean) => {
-        const tmpProperties = properties.map((property: PropertyType) => {
-            if (property.id == id) {
-                property.is_favorite = is_favorite
-
-                if (is_favorite) {
-                    console.log('added to list of favorited propreties')
-                } else {
-                    console.log('removed from list')
-                }
-            }
-
-            return property;
-        })
-
-        setProperties(tmpProperties);
-    }
+    const tmpProperties = properties.map((property) =>
+        property.id === id ? { ...property, is_favorite } : property
+    );
+    setProperties(tmpProperties);
+    };
     
     const getProperties = async () => {
-        
-       let url = '/api/properties/';
+        setLoading(true);
+        try { 
+                let url = '/api/properties/';
 
-        if (landlord_id) {
-            url += `?landlord_id=${landlord_id}`
-        } else if (favorites) {
-            url += '?is_favorites=true'
-        } else {
-            let urlQuery = '';
+                if (landlord_id) {
+                    url += `?landlord_id=${landlord_id}`
+                } else if (favorites) {
+                    url += '?is_favorites=true'
+                } else {
+                    const query = new URLSearchParams();
 
-            if (country) {
-                urlQuery += '&country=' + country
+                    if (country) query.set("country", country);
+                    if (numGuests) query.set("numGuests", String(numGuests));
+                    if (numBedrooms) query.set("numBedrooms", String(numBedrooms));
+                    if (numBathrooms) query.set("numBathrooms", String(numBathrooms));
+                    if (category) query.set("category", category);
+                    if (checkinDate) query.set("checkin", format(checkinDate, "yyyy-MM-dd"));
+                    if (checkoutDate) query.set("checkout", format(checkoutDate, "yyyy-MM-dd"));
+
+                    if (query.toString()) url += `?${query.toString()}`;
+                }
+            
+                const tmpProperties = await apiService.get(url);
+                if (!tmpProperties?.data) {
+                setProperties([]);
+                return;
+                }
+
+                setProperties(
+                tmpProperties.data.map((property: PropertyType) => ({
+                    ...property,
+                    is_favorite: tmpProperties.favorites.includes(property.id),
+                }))
+                );
+            } catch (err) {
+                console.error("Failed to load properties", err);
+                setProperties([]);
+            } finally {
+                setLoading(false);
             }
-
-            if (numGuests) {
-                urlQuery += '&numGuests=' + numGuests
-            }
-
-            if (numBedrooms) {
-                urlQuery += '&numBedrooms=' + numBedrooms
-            }
-
-            if (numBathrooms) {
-                urlQuery += '&numBathrooms=' + numBathrooms
-            }
-
-            if (category) {
-                urlQuery += '&category=' + category
-            }
-
-            if (checkinDate) {
-                urlQuery += '&checkin=' + format(checkinDate, 'yyyy-MM-dd')
-            }
-
-            if (checkoutDate) {
-                urlQuery += '&checkout=' + format(checkoutDate, 'yyyy-MM-dd')
-            }
-
-            if (urlQuery.length) {
-                console.log('Query:', urlQuery);
-
-                urlQuery = '?' + urlQuery.substring(1);
-
-                url += urlQuery;
-            }
-        }
-
-        const tmpProperties = await apiService.get(url)
-
-        setProperties(tmpProperties.data.map((property: PropertyType) => {
-            if (tmpProperties.favorites.includes(property.id)) {
-                property.is_favorite = true
-            } else {
-                property.is_favorite = false
-            }
-
-            return property
-        }));
-    };
+        };
 
     useEffect(() => {        
         getProperties();
     }, [category, searchModal.query, params]);
+
+    if (loading) {
+    return <p className="text-center py-10 text-gray-500">Loading properties...</p>;
+    }
+
+    if (!loading && properties.length === 0) {
+        return <p className="text-center py-10 text-gray-500">No properties found.</p>;
+    }
 
     return (
         <>
